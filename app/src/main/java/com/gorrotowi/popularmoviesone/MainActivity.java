@@ -1,11 +1,14 @@
 package com.gorrotowi.popularmoviesone;
 
+import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -40,7 +43,22 @@ public class MainActivity extends AppCompatActivity {
         rq = Volley.newRequestQueue(this);
 
         rcMovies = (RecyclerView) findViewById(R.id.recyclerMovies);
-        rcMovies.setLayoutManager(new GridLayoutManager(this, 2));
+        if (getResources().getConfiguration().orientation == 1) {
+            rcMovies.setLayoutManager(new GridLayoutManager(this, 3));
+        }else {
+            rcMovies.setLayoutManager(new GridLayoutManager(this, 5));
+        }
+
+        rcMovies.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.bottom = 0;
+                outRect.top = 0;
+                outRect.left = 0;
+                outRect.right = 0;
+            }
+        });
 
         getMovies(getString(R.string.query_popularity));
 
@@ -50,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         String url = getString(R.string.base_url_api) + queryMovie + "&" + getString(R.string.api_key);
 
-        jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
